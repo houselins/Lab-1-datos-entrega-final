@@ -15,6 +15,34 @@ public class Usuario {
     private String nick;
 
     public Usuario() {
+        this.name = name;
+        this.password = password;
+        this.nick = nick;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getNick() {
+        return nick;
+    }
+
+    public void setNick(String nick) {
+        this.nick = nick;
+    }
+    
     
 }
