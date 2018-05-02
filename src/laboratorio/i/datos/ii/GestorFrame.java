@@ -4,7 +4,8 @@
  * and open the template in the editor.
  */
 package laboratorio.i.datos.ii;
-
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -13,20 +14,27 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.ParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.DefaultListModel;
+import javax.swing.JFrame;
+import javax.swing.JTextField;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.tree.DefaultTreeSelectionModel;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 /**
  *
  * @author ofortich
  */
 public class GestorFrame extends javax.swing.JFrame {
     Nodo ptr = new Nodo("ptr",true);
-    
     File file = new File("file.txt");
+    File usuario = new File("usuario.txt");
     FileWriter w;
     BufferedWriter bw;
     PrintWriter pw;
@@ -38,8 +46,9 @@ public class GestorFrame extends javax.swing.JFrame {
      */
     public GestorFrame() throws IOException {
         initComponents();
+        leerUsuario(usuario,usuarioUnico);
         leerArchivo(file,ptr,modelo,jTree);
-
+        
         // Construccion de los datos del arbol ejemplo
         /*
         DefaultMutableTreeNode padre = new DefaultMutableTreeNode("padre");
@@ -55,7 +64,9 @@ public class GestorFrame extends javax.swing.JFrame {
         modelo.insertNodeInto(hijo, tio, 0);
         modelo.insertNodeInto(hija, padre, 0);
         */
-        jTree.setModel(modelo);         
+        jTree.setModel(modelo);   
+        jTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+        
        
     }
 
@@ -79,6 +90,12 @@ public class GestorFrame extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
         jButton6 = new javax.swing.JButton();
+        jLabel8 = new javax.swing.JLabel();
+        dateChooser = new com.toedter.calendar.JDateChooser();
+        jLabel9 = new javax.swing.JLabel();
+        panel1 = new javax.swing.JPanel();
+        labelNombre = new javax.swing.JLabel();
+        labelFecha = new javax.swing.JLabel();
         jFrame2 = new javax.swing.JFrame();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
@@ -100,7 +117,7 @@ public class GestorFrame extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
 
-        jFrame1.setMinimumSize(new java.awt.Dimension(500, 350));
+        jFrame1.setMinimumSize(new java.awt.Dimension(560, 319));
 
         jLabel1.setText("Nombre del Paquete");
 
@@ -125,6 +142,11 @@ public class GestorFrame extends javax.swing.JFrame {
                 jTreeTreeExpanded(evt);
             }
         });
+        jTree.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTreeMouseClicked(evt);
+            }
+        });
         jTree.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
             public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {
                 jTreeValueChanged(evt);
@@ -133,7 +155,6 @@ public class GestorFrame extends javax.swing.JFrame {
         jScrollPane1.setViewportView(jTree);
 
         añadir.setText("Añadir Entregable");
-        añadir.setEnabled(false);
         añadir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 añadirActionPerformed(evt);
@@ -162,59 +183,102 @@ public class GestorFrame extends javax.swing.JFrame {
             }
         });
 
+        jLabel8.setText("Descripción");
+
+        jLabel9.setText("Fecha del entregable");
+
+        javax.swing.GroupLayout panel1Layout = new javax.swing.GroupLayout(panel1);
+        panel1.setLayout(panel1Layout);
+        panel1Layout.setHorizontalGroup(
+            panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(labelNombre, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
+                    .addComponent(labelFecha, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        panel1Layout.setVerticalGroup(
+            panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panel1Layout.createSequentialGroup()
+                .addComponent(labelNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(labelFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+
         javax.swing.GroupLayout jFrame1Layout = new javax.swing.GroupLayout(jFrame1.getContentPane());
         jFrame1.getContentPane().setLayout(jFrame1Layout);
         jFrame1Layout.setHorizontalGroup(
             jFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jFrame1Layout.createSequentialGroup()
-                .addGap(19, 19, 19)
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 55, Short.MAX_VALUE)
                 .addGroup(jFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jFrame1Layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(jFrame1Layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(18, 18, 18)
+                        .addGroup(jFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(nombrePaquetetxt)
+                            .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(jFrame1Layout.createSequentialGroup()
                         .addGroup(jFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING))
+                            .addComponent(jButton2))
+                        .addGap(18, 18, 18)
+                        .addGroup(jFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtEntregable)
                             .addGroup(jFrame1Layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(jLabel2))
-                            .addGroup(jFrame1Layout.createSequentialGroup()
-                                .addComponent(jButton2)
-                                .addGap(0, 0, Short.MAX_VALUE))))
-                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addGap(18, 18, 18)
-                .addGroup(jFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(nombrePaquetetxt)
-                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(añadir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(txtEntregable))
-                    .addComponent(jButton6))
-                .addGap(22, 22, 22))
+                                .addGap(77, 77, 77)
+                                .addComponent(añadir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(dateChooser, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(jFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(panel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButton6)))
+                .addGap(20, 20, 20))
         );
         jFrame1Layout.setVerticalGroup(
             jFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jFrame1Layout.createSequentialGroup()
-                .addGap(50, 50, 50)
-                .addGroup(jFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(nombrePaquetetxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
-                .addGap(18, 18, 18)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jFrame1Layout.createSequentialGroup()
+                .addGap(22, 22, 22)
                 .addGroup(jFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jFrame1Layout.createSequentialGroup()
-                        .addGap(26, 26, 26)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 179, Short.MAX_VALUE))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jFrame1Layout.createSequentialGroup()
-                        .addComponent(jButton1)
-                        .addGap(40, 40, 40)
-                        .addGroup(jFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtEntregable, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel2))
+                        .addGroup(jFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jFrame1Layout.createSequentialGroup()
+                                .addComponent(nombrePaquetetxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jButton1))
+                            .addComponent(jLabel1))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(añadir)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton2)
-                            .addComponent(jButton6))))
-                .addContainerGap())
+                        .addGroup(jFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jFrame1Layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 8, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(txtEntregable, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jFrame1Layout.createSequentialGroup()
+                                .addComponent(jLabel2)
+                                .addGap(0, 0, 0)
+                                .addComponent(jLabel8)))
+                        .addGap(18, 18, 18)
+                        .addGroup(jFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(dateChooser, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel9))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGap(1, 1, 1)
+                .addComponent(panel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(29, 29, 29)
+                .addComponent(jButton6)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton2)
+                    .addComponent(añadir))
+                .addGap(25, 25, 25))
         );
 
         jFrame2.setMinimumSize(new java.awt.Dimension(400, 350));
@@ -246,22 +310,21 @@ public class GestorFrame extends javax.swing.JFrame {
         jFrame2Layout.setHorizontalGroup(
             jFrame2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jFrame2Layout.createSequentialGroup()
-                .addGap(20, 20, 20)
                 .addGroup(jFrame2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jButton3)
                     .addGroup(jFrame2Layout.createSequentialGroup()
-                        .addGroup(jFrame2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                        .addGap(30, 30, 30)
-                        .addGroup(jFrame2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                        .addGap(30, 30, 30)
-                        .addGroup(jFrame2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
-                    .addComponent(jButton3))
-                .addContainerGap(20, Short.MAX_VALUE))
+                        .addGroup(jFrame2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel5)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jFrame2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel6))
+                        .addGap(18, 18, 18)
+                        .addGroup(jFrame2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel7))))
+                .addContainerGap(72, Short.MAX_VALUE))
         );
         jFrame2Layout.setVerticalGroup(
             jFrame2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -276,9 +339,9 @@ public class GestorFrame extends javax.swing.JFrame {
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 112, Short.MAX_VALUE)
+                .addGap(48, 48, 48)
                 .addComponent(jButton3)
-                .addGap(14, 14, 14))
+                .addContainerGap(78, Short.MAX_VALUE))
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -360,6 +423,7 @@ public class GestorFrame extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         Nodo p=ptr;
+            
         if (!(ptr.existe(nombrePaquetetxt.getText(), p)) && !(nombrePaquetetxt.getText().equals(""))) {
             System.out.println("agrega "+nombrePaquetetxt.getText());
             ptr.add(nombrePaquetetxt.getText(),true);
@@ -390,7 +454,22 @@ public class GestorFrame extends javax.swing.JFrame {
             usuarioUnico.setPassword(contraseñaAccounttxt.getText());
             nombreAccounttxt.setText("");
             contraseñaAccounttxt.setText("");
+            FileWriter f;
+            try {
+                f = new FileWriter(usuario);
+                BufferedWriter b = new BufferedWriter(f);
+                b.write(usuarioUnico.getName());
+                b.newLine();
+                b.write(usuarioUnico.getPassword());
+                b.close();
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(GestorFrame.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(GestorFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
             JOptionPane.showMessageDialog(null, "Cuenta creada con exito");
+            
         }
     }//GEN-LAST:event_jButton5ActionPerformed
 
@@ -418,11 +497,12 @@ public class GestorFrame extends javax.swing.JFrame {
         //String nombrePaquete=jTree.get;
         //Nodo padre=ptr.buscarPaquete(nombrePaquete, ptr);
         Nodo p=ptr;
+        Date fecha = dateChooser.getDate();
         if (!((ptr.existe(nombreEntregable, p)) || txtEntregable.getText().equals(""))&&(jTree.getLastSelectedPathComponent()!=null)) {
             System.out.println("agrega "+nombreEntregable);
             String e=jTree.getLastSelectedPathComponent().toString();
             DefaultMutableTreeNode n = (DefaultMutableTreeNode)jTree.getLastSelectedPathComponent();
-            ptr.buscarPaquete(e, ptr).add(nombreEntregable,false);
+            ptr.buscarPaquete(e, ptr).add(new Nodo(nombreEntregable,false,fecha));
             DefaultMutableTreeNode hijo = new DefaultMutableTreeNode(nombreEntregable);
             modelo.insertNodeInto(hijo, n, n.getChildCount());
             jTree.setModel(modelo);
@@ -505,6 +585,70 @@ public class GestorFrame extends javax.swing.JFrame {
         }        // TODO add your handling code here:
     }//GEN-LAST:event_jButton6ActionPerformed
 
+    private void jTreeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTreeMouseClicked
+        // TODO add your handling code here:
+        if (jTree.getLastSelectedPathComponent()!=null) {
+            
+
+            DefaultMutableTreeNode n = (DefaultMutableTreeNode)jTree.getLastSelectedPathComponent();
+            String s = n.toString();
+            Nodo a = ptr.buscarPaquete(n.getParent().toString(), ptr);
+            if (ptr.buscarEntregable(s, a)!=null) {
+
+
+                Nodo p = ptr.buscarEntregable(s, a);
+                labelNombre.setText(p.getNombre());
+                labelFecha.setText(p.fecha.toString());
+            }
+        }
+        /*if (ptr.buscarPaquete(jTree.getSelectionPath().toString(),ptr)==null) {
+            
+        
+            String s = jTree.getSelectionPath().toString();
+            String pattern = "yyyy-M-dd";
+            SimpleDateFormat formatoDelTexto = new SimpleDateFormat(pattern);
+            Date fecha = null;
+            try {
+                fecha = formatoDelTexto.parse(ptr.buscarEntregable(s, ptr).fecha.toString());
+            } catch (ParseException ex) {
+                ex.printStackTrace();
+            }
+            JTextField fechaNacimiento = new JTextField(fecha.toLocaleString());
+
+            // Se agrega en un JTextField fechaNacimiento al panel.
+            panel1.add(fechaNacimiento);
+        }
+        */
+    }//GEN-LAST:event_jTreeMouseClicked
+    
+    public void valueChanged(TreeSelectionEvent e) {
+
+        // Obtenemos y escribimos en pantalla  el path seleccionado
+        TreePath path = e.getPath();
+        Object [] nodos = path.getPath();
+        System.out.print("Path seleccionado: ");
+        for (Object nodo: nodos){
+                System.out.print (nodo.toString() + " | ");
+        System.out.println("");
+        }
+        // Mirando el ultimo nodo del path, sabemos qué nodo en concreto
+        // se ha seleccionado.
+        DefaultMutableTreeNode ultimoNodo = 
+                (DefaultMutableTreeNode)nodos[nodos.length-1];
+
+        // Por ejemplo, para ver si se ha seleccionado el "hijo1"...
+        if (ultimoNodo.getUserObject().equals("hijo1"))
+        {
+            // Necesitamos el modeloSeleccion para saber si "hijo1" se ha
+            // seleccionado o deseleccionado.
+            DefaultTreeSelectionModel modeloSeleccion = 
+                    (DefaultTreeSelectionModel)e.getSource();
+            if (modeloSeleccion.isPathSelected(path))
+                System.out.println("Has seleccionado hijo 1");
+            else
+                System.out.println("Has deseleccionado hijo 1");
+        }
+    }
     public void recorridoPreorden()
     {
         ayudantePreorden(ptr);
@@ -554,6 +698,14 @@ public class GestorFrame extends javax.swing.JFrame {
         System.out.print(nodo.getNombre() + " ");
         modelo3.addElement(nodo.getNombre());
     }
+    void leerUsuario(File archivo, Usuario usuario) throws FileNotFoundException, IOException{
+        
+        FileReader f = new FileReader(archivo);
+        BufferedReader b = new BufferedReader(f);
+        usuario.setName(b.readLine());
+        usuario.setPassword(b.readLine());
+        b.close();
+    }
     void leerArchivo(File archivo, Nodo ptr, DefaultTreeModel modelo, javax.swing.JTree jTree) throws FileNotFoundException, IOException {
         String a;
         Nodo p=ptr;
@@ -570,10 +722,8 @@ public class GestorFrame extends javax.swing.JFrame {
                         modelo.insertNodeInto(padre, ptr, ptr.getChildCount());
                     }else{
                         if(a.equals("")){
-                            JOptionPane.showMessageDialog(null, "Nombre de paquete invalido");
                         }
                         if(ptr.existe(a, p)){
-                            JOptionPane.showMessageDialog(null, "Ese paquete ya existe");
                         }
                     }
                     padr = a;
@@ -588,7 +738,7 @@ public class GestorFrame extends javax.swing.JFrame {
                             ptr.buscarPaquete(padr, ptr).add(nombreEntregable,false);
                             DefaultMutableTreeNode n = new DefaultMutableTreeNode(nombreEntregable);
                             DefaultMutableTreeNode hijo = new DefaultMutableTreeNode(nombreEntregable);
-                            modelo.insertNodeInto(hijo, padre, n.getChildCount());
+                            modelo.insertNodeInto(hijo, padre, padre.getChildCount());
                         }else{
                             if(a.equals("")){
                                 JOptionPane.showMessageDialog(null, "Nombre de entregable invalido");
@@ -603,9 +753,6 @@ public class GestorFrame extends javax.swing.JFrame {
                 }
             }
         }
-    }
-    void leerEntregables(File archivo){
-        
     }
     /**
      * @param args the command line arguments
@@ -646,10 +793,11 @@ public class GestorFrame extends javax.swing.JFrame {
             }
         });
     }
-
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton añadir;
     private javax.swing.JPasswordField contraseñaAccounttxt;
+    private com.toedter.calendar.JDateChooser dateChooser;
     private javax.swing.JList<String> inList;
     public DefaultListModel modelo2;
     private javax.swing.JButton jButton1;
@@ -667,13 +815,18 @@ public class GestorFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTree jTree;
+    private javax.swing.JLabel labelFecha;
+    private javax.swing.JLabel labelNombre;
     private javax.swing.JTextField nombreAccounttxt;
     private javax.swing.JTextField nombrePaquetetxt;
+    private javax.swing.JPanel panel1;
     private javax.swing.JList<String> postList;
     public DefaultListModel modelo3;
     private javax.swing.JList<String> preList;

@@ -5,6 +5,10 @@
  */
 package laboratorio.i.datos.ii;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import javax.swing.JFrame;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
@@ -12,13 +16,13 @@ import javax.swing.tree.DefaultMutableTreeNode;
  * @author ofortich
  */
 public class Nodo extends DefaultMutableTreeNode {
-    
+    Date fecha;
     Boolean paquete;//si es un paquete va a ser verdadero
     private String nombre;
-    int altura;
     private String data;
     private Nodo rLink;
     private Nodo lLink;
+    File archivoEntregable;
 
     public String getNombre() {
         return nombre;
@@ -33,16 +37,33 @@ public class Nodo extends DefaultMutableTreeNode {
     public Nodo getlLink() {
         return lLink;
     }
-    
+
+    public void setrLink(Nodo rLink) {
+        this.rLink = rLink;
+    }
+
+    public void setlLink(Nodo lLink) {
+        this.lLink = lLink;
+    }
+   
     
     public String getData() {
         return data;
     }
 
-    public Nodo(String nombre, Boolean paquete) {
+    public Nodo(String nombre, Boolean paquete, Date fecha) {
         this.nombre = nombre;
         this.paquete=paquete;
         this.data=data;
+        this.fecha=fecha;
+        if (!paquete) {
+            //agregar archivo
+        }
+    }
+    public Nodo(String nombre, Boolean paquete) {
+        this.nombre = nombre;
+        this.paquete=paquete;
+        this.data=null;
     }
     
     /*
@@ -67,6 +88,13 @@ public class Nodo extends DefaultMutableTreeNode {
     String getNombre(Nodo nodo){
         return this.nombre;
     }
+    void add(Nodo nodo ){
+        if (nodo.paquete) {
+            this.ultPaquete().lLink=new Nodo(nodo.nombre, true);
+        }else{
+            this.ultEntregable().rLink=new Nodo(nodo.nombre, false, nodo.fecha);
+        }
+    }
     void add(String nombre, Boolean paquete){
         if (paquete) {
             this.ultPaquete().lLink=new Nodo(nombre, true);
@@ -74,7 +102,19 @@ public class Nodo extends DefaultMutableTreeNode {
             this.ultEntregable().rLink=new Nodo(nombre, false);
         }
     }
-    
+    public void eliminar(String nombre,boolean paquete,Nodo pa){
+        if (paquete) {
+            if (buscarPaquete(nombre,pa).lLink!=null) {
+                pa.buscarPaquete(buscarPaquete(nombre,pa).lLink.nombre, pa).lLink=buscarPaquete(nombre,pa).lLink;
+            }else{
+                pa.buscarPaquete(buscarPaquete(nombre,pa).lLink.nombre, pa).lLink=null;
+            }
+        }else{
+            if (buscarEntregable(nombre,pa).rLink!=null) {
+                pa.buscarEntregable(buscarEntregable(nombre,pa).rLink.nombre, pa).rLink=buscarPaquete(nombre,pa).rLink;
+            }
+        }
+    }
      Nodo ultPaquete(){
         Nodo p=this;
         while(p.lLink != null){
@@ -140,7 +180,7 @@ public class Nodo extends DefaultMutableTreeNode {
             if ((p.lLink == null) && (p.rLink == null)) {
                 return p.nombre + " ";
             }else{
-                return nodosHoja(p.rLink) +nodosHoja(p.lLink);
+                return nodosHoja(p.rLink) + nodosHoja(p.lLink);
             }
         }
     }
@@ -148,20 +188,14 @@ public class Nodo extends DefaultMutableTreeNode {
         String nodos="";
         Nodo p=ptr;
         int c=0;
-        while(p.lLink != null){
-            p=p.lLink;
-            c++;
-        }
         p=ptr.lLink;
-        for (int i = 0; i < c; i++) {
-            if (p.rLink==null) {
-                return "";
-            }else{
+        while(p!=null){
+            if (p.rLink!=null) {
                 if (p.rLink.rLink==null) {
-                    nodos =nodos + p.nombre + ", ";
-                    p=p.lLink;
+                    nodos=nodos+", "+p.nombre;
                 }
             }
+            p=p.lLink;
         }
         return nodos;
     }
@@ -170,7 +204,7 @@ public class Nodo extends DefaultMutableTreeNode {
             if (p.nombre.equals(nombre)) {
                 return p;
             } else {
-                return buscarPaquete(nombre, p.rLink);
+                return buscarEntregable(nombre, p.rLink);
             }
         }else{
             return p;
